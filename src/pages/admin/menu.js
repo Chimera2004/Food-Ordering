@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import NavbarComponent from "../../components/Navbar";
 import FooterComponent from "../../components/Footer";
+import Swal from "sweetalert2";
 
 export default function AdminMenuPage() {
   const [menus, setMenus] = useState([]);
@@ -44,17 +45,32 @@ export default function AdminMenuPage() {
     const { id, name, price, image } = menuData;
   
     if (!name || !price || (!editMode && !image)) {
-      alert("Semua field harus diisi!");
+      Swal.fire({
+        icon: "error",
+        text: ` Semua field harus diisi!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
       return;
     }
   
     if (image instanceof File) {
       if (!["image/png", "image/jpg", "image/jpeg"].includes(image.type)) {
-        alert("Hanya gambar dengan format PNG, JPG, atau JPEG yang diperbolehkan.");
+        Swal.fire({
+          icon: "info",
+          text: `Hanya gambar dengan format PNG, JPG, atau JPEG yang diperbolehkan.`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
         return;
       }
       if (image.size > 2 * 1024 * 1024) {
-        alert("Ukuran gambar tidak boleh lebih dari 2MB.");
+        Swal.fire({
+          icon: "info",
+          text: `Ukuran Gambar Tidak Boleh Lebih Dari 2 MB.`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
         return;
       }
     }
@@ -82,7 +98,14 @@ export default function AdminMenuPage() {
         throw new Error(responseData.message || "Terjadi kesalahan pada server.");
       }
   
-      alert(editMode ? "Menu berhasil diperbarui!" : "Menu berhasil ditambahkan!");
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: editMode ? "Menu berhasil diperbarui!" : "Menu berhasil ditambahkan!",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
       setShowModal(false);
       fetchMenus();
   
@@ -109,8 +132,14 @@ export default function AdminMenuPage() {
         throw new Error(responseData.message || "Terjadi kesalahan");
       }
   
-      alert("Menu berhasil dihapus!");
-      fetchMenus(); // Refresh data setelah delete
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: `Menu Berhasil Di Hapus.`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      fetchMenus(); 
     } catch (error) {
       console.error("Error:", error);
       alert(error.message);

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form, Spinner, Toast, ToastContainer } from "react-bootstrap";
 import { useCart } from "../components/Cart";
 import Swal from "sweetalert2";
+import { useSession } from "next-auth/react";
 
 
 export default function MenuPage() {
@@ -10,6 +11,8 @@ export default function MenuPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const { addToCart } = useCart();
+  const { data: session } = useSession();
+
 
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
@@ -35,6 +38,15 @@ export default function MenuPage() {
   };
 
   const handleAddToCart = (menu) => {
+    if (!session) {
+      Swal.fire({
+        icon: "warning",
+        text: "Silakan login sebelum memesan makanan.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     addToCart(menu); 
     Swal.fire({
       icon: "success",
