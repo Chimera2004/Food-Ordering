@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { signIn } from "next-auth/react"; 
+import Swal from "sweetalert2";
 
 export default function AuthModal({ show, handleClose }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,7 +41,13 @@ export default function AuthModal({ show, handleClose }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      alert("Registrasi berhasil! Silakan login.");
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: `Registrasi Berhasil, Silahkan Login.`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
       setIsLogin(true); 
     } catch (error) {
       setError(error.message);
@@ -65,7 +72,13 @@ export default function AuthModal({ show, handleClose }) {
     if (result.error) {
       setError("Email atau password salah.");
     } else {
-      alert("Login berhasil!");
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: `Login Berhasil`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
       window.location.href = "/"; 
     }
 

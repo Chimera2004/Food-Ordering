@@ -32,4 +32,5 @@ model Order {
   status   String
   food     Food   @relation(fields: [foodId], references: [id])
   user     User   @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

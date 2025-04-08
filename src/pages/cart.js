@@ -1,6 +1,7 @@
 import { useCart } from "../components/Cart";
 import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import NavbarComponent from "../components/Navbar";
+import Swal from "sweetalert2";
 
 
 export default function CartPage() {
@@ -11,11 +12,42 @@ export default function CartPage() {
     totalPrice,
     clearCart
   } = useCart();
-
-  const handleBayar = () => {
-    alert("Terima kasih! Fitur pembayaran belum diimplementasikan.");
-    clearCart();
+  
+  const handleBayar = async () => {
+    if (cart.length === 0) {
+        alert("Keranjang kosong!");
+        return;
+      }
+      
+    try {
+      const response = await fetch("/api/auth/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cart }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Swal.fire({
+            icon: "info",
+            title: "Warning!",
+            text: `Mohon maaf saat ini kami belum memiliki fitur transaksi`,
+            showConfirmButton: false,
+            timer: 2000,
+          })
+        clearCart();
+      } else {
+        alert(data.message || "Gagal melakukan pemesanan.");
+      }
+    } catch (error) {
+      console.error("Bayar error:", error);
+      alert("Terjadi kesalahan saat membayar.");
+    }
   };
+  
 
   return (
     <>

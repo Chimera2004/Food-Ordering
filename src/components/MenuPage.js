@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form, Spinner, Toast, ToastContainer } from "react-bootstrap";
 import { useCart } from "../components/Cart";
+import Swal from "sweetalert2";
+
 
 export default function MenuPage() {
   const [menus, setMenus] = useState([]);
@@ -34,8 +36,13 @@ export default function MenuPage() {
 
   const handleAddToCart = (menu) => {
     addToCart(menu); 
-    setToastMsg(`🛒 ${menu.name} telah ditambahkan ke keranjang.`);
-    setShowToast(true);
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil!",
+      text: `🛒 ${menu.name} telah ditambahkan ke keranjang.`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
   };
 
   return (
@@ -88,22 +95,6 @@ export default function MenuPage() {
           )}
         </Row>
       )}
-
-      {}
-      <ToastContainer
-          className="position-fixed top-50 start-50 translate-middle"
-          style={{ zIndex: 9999 }}
-        >
-          <Toast
-            onClose={() => setShowToast(false)}
-            show={showToast}
-            delay={3000}
-            autohide
-            bg="success"
-          >
-            <Toast.Body className="text-white text-center fw-bold">{toastMsg}</Toast.Body>
-          </Toast>
-        </ToastContainer>
     </Container>
   );
 }
