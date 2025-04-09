@@ -1,21 +1,27 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form, Spinner, Toast, ToastContainer } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Spinner,
+} from "react-bootstrap";
 import { useCart } from "../components/Cart";
 import Swal from "sweetalert2";
 import { useSession } from "next-auth/react";
-
 
 export default function MenuPage() {
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
   const { addToCart } = useCart();
   const { data: session } = useSession();
-
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -33,8 +39,13 @@ export default function MenuPage() {
     fetchMenus();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setCurrentPage(1); // reset halaman saat search berubah
   };
 
   const handleAddToCart = (menu) => {
@@ -47,7 +58,7 @@ export default function MenuPage() {
       return;
     }
 
-    addToCart(menu); 
+    addToCart(menu);
     Swal.fire({
       icon: "success",
       title: "Berhasil!",
@@ -56,6 +67,19 @@ export default function MenuPage() {
       timer: 2000,
     });
   };
+
+  const filteredMenus = menus
+    .filter((menu) =>
+      menu.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((menu) => (category ? menu.category === category : true));
+
+  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedMenus = filteredMenus.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   return (
     <Container className="mt-4">
@@ -76,36 +100,65 @@ export default function MenuPage() {
           </Spinner>
         </div>
       ) : (
-        <Row>
-          {menus.length > 0 ? (
-            menus
-              .filter((menu) => menu.name.toLowerCase().includes(search.toLowerCase()))
-              .filter((menu) => (category ? menu.category === category : true))
-              .map((menu) => (
+        <>
+          {paginatedMenus.length > 0 ? (
+            <Row>
+              {paginatedMenus.map((menu) => (
                 <Col key={menu.id} md={4} className="mb-4">
                   <Card>
-                    <div style={{ width: "100%", height: "200px", overflow: "hidden" }}>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        overflow: "hidden",
+                      }}
+                    >
                       <Card.Img
                         variant="top"
                         src={menu.image}
                         alt={menu.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
                       />
                     </div>
                     <Card.Body>
                       <Card.Title>{menu.name}</Card.Title>
-                      <Card.Text>Rp {menu.price.toLocaleString()}</Card.Text>
-                      <Button variant="success" onClick={() => handleAddToCart(menu)}>
+                      <Card.Text>
+                        Rp {menu.price.toLocaleString()}
+                      </Card.Text>
+                      <Button
+                        variant="success"
+                        onClick={() => handleAddToCart(menu)}
+                      >
                         Pesan Sekarang
                       </Button>
                     </Card.Body>
                   </Card>
                 </Col>
-              ))
+              ))}
+            </Row>
           ) : (
-            <p className="text-center w-100">Menu tidak ditemukan.</p>
+            <p className="text-center my-5 w-100">Menu tidak ditemukan.</p>
           )}
-        </Row>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <Button
+                  key={i}
+                  variant={i + 1 === currentPage ? "primary" : "outline-primary"}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </Container>
   );

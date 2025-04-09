@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
-import { signIn } from "next-auth/react"; 
+import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
+import { EyeFill, EyeSlashFill } from "react-bootstrap-icons"; 
 
 export default function AuthModal({ show, handleClose }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "", nama: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
-    setError(""); 
+    setError("");
   };
 
   const handleChange = (e) => {
@@ -35,7 +38,7 @@ export default function AuthModal({ show, handleClose }) {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nama, email, password, confirmPassword }), 
+        body: JSON.stringify({ nama, email, password, confirmPassword }),
       });
 
       const data = await res.json();
@@ -48,7 +51,7 @@ export default function AuthModal({ show, handleClose }) {
         showConfirmButton: false,
         timer: 2000,
       });
-      setIsLogin(true); 
+      setIsLogin(true);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -79,7 +82,7 @@ export default function AuthModal({ show, handleClose }) {
         showConfirmButton: false,
         timer: 2000,
       });
-      window.location.href = "/"; 
+      window.location.href = "/";
     }
 
     setLoading(false);
@@ -104,14 +107,48 @@ export default function AuthModal({ show, handleClose }) {
             <Form.Label>Email</Form.Label>
             <Form.Control type="email" name="email" onChange={handleChange} required />
           </Form.Group>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3 position-relative">
             <Form.Label>Password</Form.Label>
-            <Form.Control type="password" name="password" onChange={handleChange} required />
+            <Form.Control
+              type={showPassword ? "text" : "password"}
+              name="password"
+              onChange={handleChange}
+              required
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                top: "38px",
+                right: "10px",
+                cursor: "pointer",
+                color: "#6c757d",
+              }}
+            >
+              {showPassword ? <EyeSlashFill /> : <EyeFill />}
+            </span>
           </Form.Group>
           {!isLogin && (
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 position-relative">
               <Form.Label>Konfirmasi Password</Form.Label>
-              <Form.Control type="password" name="confirmPassword" onChange={handleChange} required />
+              <Form.Control
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                onChange={handleChange}
+                required
+              />
+              <span
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: "absolute",
+                  top: "38px",
+                  right: "10px",
+                  cursor: "pointer",
+                  color: "#6c757d",
+                }}
+              >
+                {showConfirmPassword ? <EyeSlashFill /> : <EyeFill />}
+              </span>
             </Form.Group>
           )}
           <Button variant="primary" type="submit" className="w-100" disabled={loading}>
