@@ -129,12 +129,21 @@ export default function MenuPage() {
                       <Card.Text>
                         Rp {menu.price.toLocaleString()}
                       </Card.Text>
-                      <Button
-                        variant="success"
-                        onClick={() => handleAddToCart(menu)}
-                      >
-                        Pesan Sekarang
-                      </Button>
+                      <div className="d-flex justify-content-between">
+                        <Button
+                          variant="success"
+                          onClick={() => handleAddToCart(menu)}
+                        >
+                          Pesan Sekarang
+                        </Button>
+                        <Button
+                          variant="info"
+                          className="mt-2 ms-2"
+                          onClick={() => window.location.href = `/food/${menu.id}`}
+                        >
+                          Detail
+                        </Button>
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>

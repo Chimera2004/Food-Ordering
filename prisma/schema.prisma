@@ -8,29 +8,43 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
+  id       String   @id @default(uuid())
   nama     String
-  email    String  @unique
+  email    String   @unique
   password String
   role     String
   orders   Order[]
+  Review   Review[]
 }
 
 model Food {
-  id     String  @id @default(uuid())
+  id     String   @id @default(uuid())
   name   String
   price  Float
   image  String
   orders Order[]
+  Review Review[]
 }
 
 model Order {
-  id       String @id @default(uuid())
-  userId   String
-  foodId   String
-  quantity Int
-  status   String
-  food     Food   @relation(fields: [foodId], references: [id])
-  user     User   @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String
+  foodId    String
+  quantity  Int
+  status    String
+  food      Food     @relation(fields: [foodId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  foodId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  food Food @relation(fields: [foodId], references: [id])
 }

@@ -24,7 +24,6 @@ export default function ProfilePage() {
       const sessionRes = await fetch("/api/auth/session");
       const session = await sessionRes.json();
       setForm({ name: session?.user?.name || "", email: session?.user?.email || "" });
-
       setLoading(false);
     };
     fetchData();
